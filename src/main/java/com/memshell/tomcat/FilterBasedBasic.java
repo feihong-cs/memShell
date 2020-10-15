@@ -1,11 +1,9 @@
 package com.memshell.tomcat;
 
-import com.memshell.generic.MyClassLoader;
 import org.apache.catalina.Context;
 import org.apache.catalina.core.ApplicationContext;
 import org.apache.catalina.core.ApplicationFilterConfig;
 import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.deploy.FilterMap;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.*;
@@ -38,7 +36,7 @@ public class FilterBasedBasic extends HttpServlet {
 
             String filterName = "dynamic1";
             String urlPattern = "/abc";
-            String password = "pass";
+            final String password = "pass";
 
             // 获取 standardContext
             final ServletContext servletContext = req.getSession().getServletContext();

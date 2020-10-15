@@ -8,7 +8,7 @@
 - [x] JBoss/Wildfly <br>
     Tested on 8.0.0.Final, 18.0.0.Final, 21.0.0.Beta1
 - [x] Jetty <br>
-    Tested on 9.4.30.v20200611, 9.3.28.v20191105, 9.2.29.v20191105, failed on earlier versions
+    Tested on 9.4.30.v20200611, 9.3.28.v20191105, 9.2.29.v20191105, 9.1.6.v20160112, failed on earlier versions
 
 ## Reference
 [Tomcat源代码调试：看不见的Shell第一式](https://www.freebuf.com/articles/web/151431.html)<br>

@@ -35,7 +35,7 @@ public class FilterBasedBasic extends HttpServlet {
         try{
 
             String filterName = "dynamic1";
-            String urlPattern = "/abc";
+            String urlPattern = "/aaa";
             final String password = "pass";
 
             // 获取 standardContext

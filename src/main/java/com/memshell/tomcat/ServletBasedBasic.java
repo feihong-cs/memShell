@@ -31,8 +31,8 @@ public class ServletBasedBasic extends HttpServlet {
 //        适用范围: Tomcat 7 ~ 9
 
         try{
-            String servrletName = "myServlet";
-            String urlPattern = "/xyz";
+            String servrletName = "myServlet1";
+            String urlPattern = "/xxx";
             final String password = "pass";
 
             // 获取 standardContext

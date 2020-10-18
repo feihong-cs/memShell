@@ -28,6 +28,26 @@
         <url-pattern>/case2</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>JettyCase3</servlet-name>
+        <servlet-class>com.memshell.jetty.FilterBasedWithoutRequestVariant</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>JettyCase3</servlet-name>
+        <url-pattern>/case3</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>JettyCase4</servlet-name>
+        <servlet-class>com.memshell.jetty.ServletBasedWithoutRequestVariant</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>JettyCase4</servlet-name>
+        <url-pattern>/case4</url-pattern>
+    </servlet-mapping>
+
     <filter>
       <filter-name>TestFilter</filter-name>
       <filter-class>com.memshell.generic.BasicFilter</filter-class>

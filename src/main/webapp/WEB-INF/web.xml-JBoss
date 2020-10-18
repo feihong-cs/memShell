@@ -10,7 +10,7 @@
 
     <servlet>
       <servlet-name>JBossCase1</servlet-name>
-      <servlet-class>com.memshell.jboss.FilterBasedBasic</servlet-class>
+      <servlet-class>com.memshell.jboss.FilterBasedWithoutRequest</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -20,33 +20,13 @@
 
     <servlet>
       <servlet-name>JBossCase2</servlet-name>
-      <servlet-class>com.memshell.jboss.ServletBasedBasic</servlet-class>
+      <servlet-class>com.memshell.jboss.ServletBasedWithoutRequest</servlet-class>
     </servlet>
 
     <servlet-mapping>
       <servlet-name>JBossCase2</servlet-name>
       <url-pattern>/case2</url-pattern>
     </servlet-mapping>
-
-     <servlet>
-          <servlet-name>JBossCase3</servlet-name>
-          <servlet-class>com.memshell.jboss.FilterBasedWithoutRequest</servlet-class>
-     </servlet>
-
-      <servlet-mapping>
-        <servlet-name>JBossCase3</servlet-name>
-        <url-pattern>/case3</url-pattern>
-      </servlet-mapping>
-
-      <servlet>
-        <servlet-name>JBossCase4</servlet-name>
-        <servlet-class>com.memshell.jboss.ServletBasedWithoutRequest</servlet-class>
-      </servlet>
-
-      <servlet-mapping>
-        <servlet-name>JBossCase4</servlet-name>
-        <url-pattern>/case4</url-pattern>
-      </servlet-mapping>
 
     <filter>
       <filter-name>TestFilter</filter-name>

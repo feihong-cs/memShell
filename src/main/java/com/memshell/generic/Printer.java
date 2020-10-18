@@ -9,14 +9,10 @@ public class Printer {
 
     public static void main(String[] args) throws IOException {
 
-        String path = "G:\\code\\java\\memShell\\target\\classes\\com\\memshell\\generic\\DynamicFilterTemplate.class";
+        String path = "G:\\code\\java\\memShell\\target\\classes\\com\\memshell\\generic\\DynamicControllerTemplate.class";
         FileInputStream in = new FileInputStream(path);
         byte[] bytes = new byte[in.available()];
         in.read(bytes);
-
-        FileOutputStream stream = new FileOutputStream("111.class");
-        stream.write(bytes);
-        stream.close();
 
         BASE64Encoder encoder = new BASE64Encoder();
         String base64String = encoder.encode(bytes).replaceAll("\r\n|\r|\n","");

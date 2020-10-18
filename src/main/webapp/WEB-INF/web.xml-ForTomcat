@@ -10,7 +10,7 @@
 
     <servlet>
       <servlet-name>TomcatCase1</servlet-name>
-      <servlet-class>com.memshell.tomcat.ServletBasedBasic</servlet-class>
+      <servlet-class>com.memshell.tomcat.FilterBasedBasic</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -20,7 +20,7 @@
 
     <servlet>
       <servlet-name>TomcatCase2</servlet-name>
-      <servlet-class>com.memshell.tomcat.ServletBasedBasicVariant</servlet-class>
+      <servlet-class>com.memshell.tomcat.FilterBasedWithoutRequest</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -30,7 +30,7 @@
 
     <servlet>
       <servlet-name>TomcatCase3</servlet-name>
-      <servlet-class>com.memshell.tomcat.ServletBasedWithoutRequest</servlet-class>
+      <servlet-class>com.memshell.tomcat.FilterBasedWithoutRequestVariant</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -40,7 +40,7 @@
 
     <servlet>
       <servlet-name>TomcatCase4</servlet-name>
-      <servlet-class>com.memshell.tomcat.FilterBasedBasic</servlet-class>
+      <servlet-class>com.memshell.tomcat.ServletBasedBasic</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -50,12 +50,22 @@
 
     <servlet>
       <servlet-name>TomcatCase5</servlet-name>
-      <servlet-class>com.memshell.tomcat.FilterBasedWithoutRequest</servlet-class>
+      <servlet-class>com.memshell.tomcat.ServletBasedWithoutRequest</servlet-class>
     </servlet>
 
     <servlet-mapping>
       <servlet-name>TomcatCase5</servlet-name>
       <url-pattern>/case5</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>TomcatCase6</servlet-name>
+      <servlet-class>com.memshell.tomcat.ServletBasedWithoutRequestVariant</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+      <servlet-name>TomcatCase6</servlet-name>
+      <url-pattern>/case6</url-pattern>
     </servlet-mapping>
 
     <filter>

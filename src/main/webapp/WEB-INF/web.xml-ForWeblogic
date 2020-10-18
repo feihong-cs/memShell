@@ -17,32 +17,12 @@
 
     <servlet>
       <servlet-name>WeblogicCase2</servlet-name>
-      <servlet-class>com.memshell.weblogic.FilterBasedBasicVariant</servlet-class>
+      <servlet-class>com.memshell.weblogic.FilterBasedWithoutRequest</servlet-class>
     </servlet>
 
     <servlet-mapping>
       <servlet-name>WeblogicCase2</servlet-name>
       <url-pattern>/case2</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-      <servlet-name>WeblogicCase3</servlet-name>
-      <servlet-class>com.memshell.weblogic.FilterBasedWithoutRequestTypeA</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-      <servlet-name>WeblogicCase3</servlet-name>
-      <url-pattern>/case3</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-      <servlet-name>WeblogicCase4</servlet-name>
-      <servlet-class>com.memshell.weblogic.FilterBasedWithoutRequestTypeB</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-      <servlet-name>WeblogicCase4</servlet-name>
-      <url-pattern>/case4</url-pattern>
     </servlet-mapping>
 
     <filter>

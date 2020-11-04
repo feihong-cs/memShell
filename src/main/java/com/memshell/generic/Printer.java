@@ -2,7 +2,6 @@ package com.memshell.generic;
 
 import sun.misc.BASE64Encoder;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class Printer {

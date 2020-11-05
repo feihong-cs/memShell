@@ -23,7 +23,7 @@
 //        initialize();
 //    }
 //
-//    @RequestMapping(value = "/poc")
+//    @RequestMapping(value = "/poc2020")
 //    public void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
 //        System.out.println("[+] Dynamic Controller says hello");
 //

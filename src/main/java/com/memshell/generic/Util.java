@@ -6,7 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class Util {
-    public static Class<DynamicFilterTemplate> getDynamicFilterTemplateClass() throws IOException, InvocationTargetException, IllegalAccessException {
+    public static Class getDynamicFilterTemplateClass() throws IOException, InvocationTargetException, IllegalAccessException {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         Class clazz;
         try{
@@ -32,7 +32,7 @@ public class Util {
         return clazz;
     }
 
-    public static Class<DynamicControllerTemplate> getDynamicControllerTemplateClass(){
+    public static Class getDynamicControllerTemplateClass(){
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Class clazz = null;
         try{
@@ -62,7 +62,7 @@ public class Util {
         return clazz;
     }
 
-    public static Class<DynamicServletTemplate> getDynamicServletTemplateClass() throws InvocationTargetException, IllegalAccessException, IOException {
+    public static Class getDynamicServletTemplateClass() throws InvocationTargetException, IllegalAccessException, IOException {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         Class clazz;
         try{

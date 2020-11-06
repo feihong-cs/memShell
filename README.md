@@ -12,7 +12,7 @@
 - [x] Websphere <br>
     Tested on Websphere Applicaton Server v8.5 and v9.0
 - [x] Spring (not a middleware but a framework) <br>
-    Tested on SpringMVC 5.2.3
+    Tested on SpringMVC 5.2.10.RELEASE, 5.0.8.RELEASE, 4.3.28.RELEASE, 4.0.5.RELEASE, 3.2.3.RELEASE, 3.0.5.RELEASE
 
 ## Reference
 [Tomcat源代码调试：看不见的Shell第一式](https://www.freebuf.com/articles/web/151431.html)<br>
